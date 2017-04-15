@@ -110,44 +110,41 @@ namespace Lidgren.Network
 			IPHostEntry entry;
 			try
 			{
-				Dns.BeginGetHostEntry(ipOrHost, delegate(IAsyncResult result)
+				try
 				{
-					try
+					entry = Dns.GetHostEntryAsync(ipOrHost).Result;
+				}
+				catch (SocketException ex)
+				{
+					if (ex.SocketErrorCode == SocketError.HostNotFound)
 					{
-						entry = Dns.EndGetHostEntry(result);
-					}
-					catch (SocketException ex)
-					{
-						if (ex.SocketErrorCode == SocketError.HostNotFound)
-						{
-							//LogWrite(string.Format(CultureInfo.InvariantCulture, "Failed to resolve host '{0}'.", ipOrHost));
-							callback(null);
-							return;
-						}
-						else
-						{
-							throw;
-						}
-					}
-
-					if (entry == null)
-					{
+						//LogWrite(string.Format(CultureInfo.InvariantCulture, "Failed to resolve host '{0}'.", ipOrHost));
 						callback(null);
 						return;
 					}
-
-					// check each entry for a valid IP address
-					foreach (var ipCurrent in entry.AddressList)
+					else
 					{
-						if (ipCurrent.AddressFamily == AddressFamily.InterNetwork)
-						{
-							callback(ipCurrent);
-							return;
-						}
+						throw;
 					}
+				}
 
+				if (entry == null)
+				{
 					callback(null);
-				}, null);
+					return;
+				}
+
+				// check each entry for a valid IP address
+				foreach (var ipCurrent in entry.AddressList)
+				{
+					if (ipCurrent.AddressFamily == AddressFamily.InterNetwork)
+					{
+						callback(ipCurrent);
+						return;
+					}
+				}
+
+				callback(null);
 			}
 			catch (SocketException ex)
 			{
@@ -184,7 +181,7 @@ namespace Lidgren.Network
 			// ok must be a host name
 			try
 			{
-				var addresses = Dns.GetHostAddresses(ipOrHost);
+				var addresses = Dns.GetHostAddressesAsync(ipOrHost).Result;
 				if (addresses == null)
 					return null;
 				foreach (var address in addresses)
@@ -413,7 +410,7 @@ namespace Lidgren.Network
 					{
 						if (j >= h)
 						{
-							if (string.Compare(list[j - h].Name, tmp.Name, StringComparison.InvariantCulture) > 0)
+							if (string.Compare(list[j - h].Name, tmp.Name, StringComparison.Ordinal) > 0)
 							{
 								list[j] = list[j - h];
 								j -= h;

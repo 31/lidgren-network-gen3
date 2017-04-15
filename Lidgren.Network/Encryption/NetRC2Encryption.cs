@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 
 namespace Lidgren.Network
 {
+#if RC2CryptoServiceProvider_Supported
 	public class NetRC2Encryption : NetCryptoProviderBase
 	{
 		public NetRC2Encryption(NetPeer peer)
@@ -23,4 +24,5 @@ namespace Lidgren.Network
 			SetKey(data, offset, count);
 		}
 	}
+#endif
 }

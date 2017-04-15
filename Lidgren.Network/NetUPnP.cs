@@ -97,7 +97,7 @@ namespace Lidgren.Network
 			{
 #endif
 			XmlDocument desc = new XmlDocument();
-			using (var response = WebRequest.Create(resp).GetResponse())
+			using (var response = WebRequest.Create(resp).GetResponseAsync().Result)
 				desc.Load(response.GetResponseStream());
 
 			XmlNamespaceManager nsMgr = new XmlNamespaceManager(desc.NameTable);
@@ -181,8 +181,8 @@ namespace Lidgren.Network
 					"<u:AddPortMapping xmlns:u=\"urn:schemas-upnp-org:service:" + m_serviceName + ":1\">" +
 					"<NewRemoteHost></NewRemoteHost>" +
 					"<NewExternalPort>" + port.ToString() + "</NewExternalPort>" +
-					"<NewProtocol>" + ProtocolType.Udp.ToString().ToUpper(System.Globalization.CultureInfo.InvariantCulture) + "</NewProtocol>" +
-					"<NewInternalPort>" + port.ToString() + "</NewInternalPort>" +
+					"<NewProtocol>" + ProtocolType.Udp.ToString().ToUpperInvariant() + "</NewProtocol>" +
+					"<NewInternalPort>" + port.ToString() + "</NewInternalPort>InvariantCulture" +
 					"<NewInternalClient>" + client.ToString() + "</NewInternalClient>" +
 					"<NewEnabled>1</NewEnabled>" +
 					"<NewPortMappingDescription>" + description + "</NewPortMappingDescription>" +
@@ -216,7 +216,7 @@ namespace Lidgren.Network
 				"<NewRemoteHost>" +
 				"</NewRemoteHost>" +
 				"<NewExternalPort>" + port + "</NewExternalPort>" +
-				"<NewProtocol>" + ProtocolType.Udp.ToString().ToUpper(System.Globalization.CultureInfo.InvariantCulture) + "</NewProtocol>" +
+				"<NewProtocol>" + ProtocolType.Udp.ToString().ToUpperInvariant() + "</NewProtocol>" +
 				"</u:DeletePortMapping>", "DeletePortMapping");
 				return true;
 			}
@@ -261,11 +261,11 @@ namespace Lidgren.Network
 			WebRequest r = HttpWebRequest.Create(url);
 			r.Method = "POST";
 			byte[] b = System.Text.Encoding.UTF8.GetBytes(req);
-			r.Headers.Add("SOAPACTION", "\"urn:schemas-upnp-org:service:" + m_serviceName + ":1#" + function + "\""); 
+			r.Headers["SOAPACTION"] = "\"urn:schemas-upnp-org:service:" + m_serviceName + ":1#" + function + "\""; 
 			r.ContentType = "text/xml; charset=\"utf-8\"";
-			r.ContentLength = b.Length;
-			r.GetRequestStream().Write(b, 0, b.Length);
-			using (WebResponse wres = r.GetResponse()) {
+			r.GetRequestStreamAsync().Result.Write(b, 0, b.Length);
+			using (WebResponse wres = r.GetResponseAsync().Result)
+			{
 				XmlDocument resp = new XmlDocument();
 				Stream ress = wres.GetResponseStream();
 				resp.Load(ress);

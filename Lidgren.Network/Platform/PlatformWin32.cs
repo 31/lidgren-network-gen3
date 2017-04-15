@@ -18,7 +18,8 @@ namespace Lidgren.Network
 		public static ulong GetPlatformSeed(int seedInc)
 		{
 			ulong seed = (ulong)System.Diagnostics.Stopwatch.GetTimestamp();
-			return seed ^ ((ulong)Environment.WorkingSet + (ulong)seedInc);
+			// TODO: Use Environment.WorkingSet as part of seed.
+			return seed ^ ((ulong)0 + (ulong)seedInc);
 		}
 
 		public static double Now { get { return (double)(Stopwatch.GetTimestamp() - s_timeInitialized) * s_dInvFreq; } }

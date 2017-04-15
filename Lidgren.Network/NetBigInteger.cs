@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 
@@ -2176,7 +2177,7 @@ namespace Lidgren.Network
 			else
 			{
 				// This is algorithm 1a from chapter 4.4 in Seminumerical Algorithms, slow but it works
-				Stack S = new Stack();
+				Stack<object> S = new Stack<object>();
 				NetBigInteger bs = ValueOf(radix);
 
 				NetBigInteger u = Abs();

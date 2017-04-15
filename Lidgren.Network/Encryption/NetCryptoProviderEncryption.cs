@@ -22,11 +22,11 @@ namespace Lidgren.Network
 			var ms = new MemoryStream();
 			var cs = GetEncryptStream(ms);
 			cs.Write(msg.m_data, 0, msg.LengthBytes);
-			cs.Close();
+			cs.Dispose();
 
 			// get results
 			var arr = ms.ToArray();
-			ms.Close();
+			ms.Dispose();
 
 			msg.EnsureBufferSize((arr.Length + 4) * 8);
 			msg.LengthBits = 0; // reset write pointer
@@ -46,7 +46,7 @@ namespace Lidgren.Network
 
 			var result = m_peer.GetStorage(unEncLenBits);
 			cs.Read(result, 0, NetUtility.BytesToHoldBits(unEncLenBits));
-			cs.Close();
+			cs.Dispose();
 
 			// TODO: recycle existing msg
 

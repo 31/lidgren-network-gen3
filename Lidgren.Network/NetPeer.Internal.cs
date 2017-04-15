@@ -262,7 +262,9 @@ namespace Lidgren.Network
 
 						try
 						{
-							m_socket.Close(2); // 2 seconds timeout
+							// 2 seconds timeout
+							m_socket.LingerState = new LingerOption(true, 2);
+							m_socket.Dispose();
 						}
 						catch (Exception ex)
 						{

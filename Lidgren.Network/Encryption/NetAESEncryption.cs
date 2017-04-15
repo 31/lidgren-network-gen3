@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 
 namespace Lidgren.Network
 {
+#if AesCryptoServiceProvider_Supported
 	public class NetAESEncryption : NetCryptoProviderBase
 	{
 		public NetAESEncryption(NetPeer peer)
@@ -35,4 +36,5 @@ namespace Lidgren.Network
 			SetKey(data, offset, count);
 		}
 	}
+#endif
 }
